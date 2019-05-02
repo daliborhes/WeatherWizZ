@@ -20,6 +20,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -37,6 +38,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.scrolling_desc_txt) TextView scrollingDescTxt;
     @BindView(R.id.scrolling_date_txt) TextView scrollingDateTxt;
     @BindView(R.id.scrolling_image_view) ImageView scrollingImageView;
+    @BindView(R.id.app_bar_layout) AppBarLayout appBarLayout;
+    @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.root_view)
     CoordinatorLayout rootLayout;
     @BindView(R.id.collapsing_toolbar_layout)
@@ -80,6 +84,18 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            buildLocationRequest();
+            buildLocationCallback();
+            swipeRefreshLayout.setRefreshing(false);
+        });
+
+        appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+            // Only allow pull to refresh when scrolled to top
+            swipeRefreshLayout.setEnabled(verticalOffset == 0);
+        });
+
 
         // Request permission
         Dexter.withActivity(this)
