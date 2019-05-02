@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Weather WizZ</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="today_weather_text">Today Weather</string>
+    <string name="day_16_weather_text">16-Day Forecast</string>
+
+</resources>
