@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.daliborhes.weatherwizz.Common.Common;
 import com.daliborhes.weatherwizz.Common.Retrofit.IOpenWeatherMap;
 import com.daliborhes.weatherwizz.Common.Retrofit.RetrofitClient;
-import com.daliborhes.weatherwizz.Model.WeatherResult;
 import com.daliborhes.weatherwizz.R;
 import com.squareup.picasso.Picasso;
 
@@ -26,19 +25,17 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class WeatherTodayFragment extends Fragment {
+public class WeatherGraphFragment extends Fragment {
 
     Unbinder unbinder;
 
     @BindView(R.id.weather_image) ImageView img_weather;
-    //@BindView(R.id.city_txt) TextView city_name_txt;
     @BindView(R.id.humidity_txt) TextView humidity_txt;
     @BindView(R.id.sunrise_txt) TextView sunrise_txt;
     @BindView(R.id.sunset_txt) TextView sunset_txt;
@@ -55,16 +52,16 @@ public class WeatherTodayFragment extends Fragment {
     CompositeDisposable compositeDisposable;
     IOpenWeatherMap mService;
 
-    static WeatherTodayFragment instance;
+    static WeatherGraphFragment instance;
 
-    public static WeatherTodayFragment getInstance() {
+    public static WeatherGraphFragment getInstance() {
         if (instance == null) {
-            instance = new WeatherTodayFragment();
+            instance = new WeatherGraphFragment();
         }
         return instance;
     }
 
-    public WeatherTodayFragment() {
+    public WeatherGraphFragment() {
         // Required empty public constructor
         compositeDisposable = new CompositeDisposable();
         Retrofit retrofit = RetrofitClient.getInstance();
@@ -76,7 +73,7 @@ public class WeatherTodayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View itemView = inflater.inflate(R.layout.fragment_today, container, false);
+        View itemView = inflater.inflate(R.layout.fragment_graph, container, false);
 
         unbinder = ButterKnife.bind(this, itemView);
 
@@ -92,38 +89,32 @@ public class WeatherTodayFragment extends Fragment {
                 "metric")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<WeatherResult>() {
-                    @Override
-                    public void accept(WeatherResult weatherResult) throws Exception {
-                        // Load images
-                        Picasso.get().load("https://openweathermap.org/img/w/" +
-                                weatherResult.getWeather().get(0).getIcon() +
-                                ".png").into(img_weather);
+                .subscribe(weatherResult -> {
+                    // Load images
+                    Picasso.get().load("https://openweathermap.org/img/w/" +
+                            weatherResult.getWeather().get(0).getIcon() +
+                            ".png").into(img_weather);
 
-                        // Load information
-                        //city_name_txt.setText(weatherResult.getName());
-                        description_txt.setText(weatherResult.getWeather().get(0).getDescription());
-                        Integer temp = weatherResult.getMain().getTemp().intValue();
-                        temperature_txt.setText(String.valueOf(temp));
-                        datetime_txt.setText(Common.convertUnixToDate(weatherResult.getDt()));
-                        pressure_txt.setText(String.valueOf(weatherResult.getMain().getPressure()) + " hpa");
-                        humidity_txt.setText(String.valueOf(weatherResult.getMain().getHumidity()) + " %");
-                        sunrise_txt.setText(Common.convertUnixToHour(weatherResult.getSys().getSunrise()));
-                        sunset_txt.setText(Common.convertUnixToHour(weatherResult.getSys().getSunset()));
+                    // Load information
+                    //city_name_txt.setText(weatherResult.getName());
+                    description_txt.setText(weatherResult.getWeather().get(0).getDescription());
+                    Integer temp = weatherResult.getMain().getTemp().intValue();
+                    temperature_txt.setText(String.valueOf(temp));
+                    datetime_txt.setText(Common.convertUnixToDate(weatherResult.getDt()));
+                    pressure_txt.setText(weatherResult.getMain().getPressure() + " hpa");
+                    humidity_txt.setText(weatherResult.getMain().getHumidity() + " %");
+                    sunrise_txt.setText(Common.convertUnixToHour(weatherResult.getSys().getSunrise()));
+                    sunset_txt.setText(Common.convertUnixToHour(weatherResult.getSys().getSunset()));
 
-                        wind_txt.setText(String.valueOf(weatherResult.getWind().getSpeed()) + " m/s");
+                    wind_txt.setText(weatherResult.getWind().getSpeed() + " m/s");
 
-                        // Display information
-                        weather_panel.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
+                    // Display information
+                    weather_panel.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
 
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        Toast.makeText(getActivity(), "" + throwable.getMessage(), Toast.LENGTH_LONG).show();
-                        Log.d("Today", "" + throwable.getMessage().toString());
-                    }
+                }, throwable -> {
+                    Toast.makeText(getActivity(), "" + throwable.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.d("Today", "" + throwable.getMessage().toString());
                 })
         );
     }
@@ -137,7 +128,6 @@ public class WeatherTodayFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
         unbinder.unbind();
     }
 }

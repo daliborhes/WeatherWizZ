@@ -7,6 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.daliborhes.weatherwizz.Adapter.RecyclerForecastAdapter;
 import com.daliborhes.weatherwizz.Common.Common;
 import com.daliborhes.weatherwizz.Common.Retrofit.IOpenWeatherMap;
@@ -14,12 +19,8 @@ import com.daliborhes.weatherwizz.Common.Retrofit.RetrofitClient;
 import com.daliborhes.weatherwizz.Model.WeatherForecastResult;
 import com.daliborhes.weatherwizz.R;
 
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 
@@ -28,12 +29,11 @@ import retrofit2.Retrofit;
  */
 public class Weather5DayFragment extends Fragment {
 
-    static Weather5DayFragment instance;
+    private static Weather5DayFragment instance;
 
-    CompositeDisposable compositeDisposable;
-    IOpenWeatherMap mService;
+    private CompositeDisposable compositeDisposable;
+    private IOpenWeatherMap mService;
     private RecyclerView forecastRecyclerView;
-    private RecyclerForecastAdapter adapter;
 
     public static Weather5DayFragment getInstance() {
         if (instance == null) {
@@ -50,7 +50,7 @@ public class Weather5DayFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View itemView = inflater.inflate(R.layout.fragment_weather16_day, container, false);
@@ -76,20 +76,11 @@ public class Weather5DayFragment extends Fragment {
                 "metric")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<WeatherForecastResult>() {
-                    @Override
-                    public void accept(WeatherForecastResult weatherForecastResult) throws Exception {
-                        displayForecast16Day(weatherForecastResult);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        Log.d("Forecast", "Error: " + throwable.getMessage());
-                    }
-                }));
+                .subscribe(this::displayForecast5Day,
+                        throwable -> Log.d("Forecast", "Error: " + throwable.getMessage())));
     }
 
-    private void displayForecast16Day(WeatherForecastResult weatherForecastResult) {
+    private void displayForecast5Day(WeatherForecastResult weatherForecastResult) {
 
         forecastRecyclerView.setHasFixedSize(true);
         forecastRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

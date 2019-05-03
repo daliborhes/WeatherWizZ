@@ -9,12 +9,16 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daliborhes.weatherwizz.Adapter.ViewPagerAdapter;
 import com.daliborhes.weatherwizz.Common.Common;
 import com.daliborhes.weatherwizz.Common.Retrofit.IOpenWeatherMap;
+import com.daliborhes.weatherwizz.Common.Retrofit.RetrofitClient;
 import com.daliborhes.weatherwizz.Fragments.Weather5DayFragment;
-import com.daliborhes.weatherwizz.Fragments.WeatherTodayFragment;
+import com.daliborhes.weatherwizz.Fragments.WeatherGraphFragment;
+import com.daliborhes.weatherwizz.Model.WeatherForecastResult;
+import com.daliborhes.weatherwizz.Model.WeatherResult;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -29,6 +33,7 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.List;
@@ -42,7 +47,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,19 +63,23 @@ public class MainActivity extends AppCompatActivity {
     private LocationRequest locationRequest;
 
     @BindView(R.id.scrolling_temp_txt) TextView scrollingTempTxt;
+    @BindView(R.id.scrolling_minmax_temp_txt) TextView scrollingMinMaxTempTxt;
     @BindView(R.id.scrolling_desc_txt) TextView scrollingDescTxt;
     @BindView(R.id.scrolling_date_txt) TextView scrollingDateTxt;
+    @BindView(R.id.scrolling_humidity_txt) TextView scrollingHumidityTxt;
+    @BindView(R.id.scrolling_pressure_txt) TextView scrollingPressureTxt;
+    @BindView(R.id.scrolling_wind_txt) TextView scrollingWindTxt;
+    @BindView(R.id.scrolling_sunrise_txt) TextView scrollingSunriseTxt;
+    @BindView(R.id.scrolling_sunset_txt) TextView scrollingSunsetTxt;
     @BindView(R.id.scrolling_image_view) ImageView scrollingImageView;
     @BindView(R.id.app_bar_layout) AppBarLayout appBarLayout;
     @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.root_view)
-    CoordinatorLayout rootLayout;
-    @BindView(R.id.collapsing_toolbar_layout)
-    CollapsingToolbarLayout collapsingToolbarLayout;
-
+    @BindView(R.id.root_view) CoordinatorLayout rootLayout;
+    @BindView(R.id.collapsing_toolbar_layout) CollapsingToolbarLayout collapsingToolbarLayout;
 
     private IOpenWeatherMap mService;
     private CompositeDisposable compositeDisposable;
+    private Retrofit retrofit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,18 +88,13 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-//        scrollingTempTxt.setText(String.valueOf(Common.current_location.getLatitude()));
-//        scrollingDateTxt.setText("01 januar 2018");
-//        scrollingDescTxt.setText("Mostly sunny");
-
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
             buildLocationRequest();
             buildLocationCallback();
+            getWeatherInfo();
             swipeRefreshLayout.setRefreshing(false);
         });
 
@@ -131,25 +138,27 @@ public class MainActivity extends AppCompatActivity {
 
                 Common.current_location = locationResult.getLastLocation();
 
-                Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
-                String city = null;
-                String country = null;
 
-                try {
-                    List<Address> adresses = geocoder.getFromLocation(Common.current_location.getLatitude(),
-                            Common.current_location.getLongitude(),
-                            1);
-                    Address obj = adresses.get(0);
-                    city = obj.getLocality();
-                    country = obj.getCountryCode();
+                /** Deprecated method because the address(city) is retrieved via OpenWeatherMap API */
+//                Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+//                String city = null;
+//                String country = null;
+//                try {
+//                    List<Address> adresses = geocoder.getFromLocation(Common.current_location.getLatitude(),
+//                            Common.current_location.getLongitude(),
+//                            1);
+//                    Address obj = adresses.get(0);
+//                    city = obj.getLocality();
+//                    country = obj.getCountryCode();
+//
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                collapsingToolbarLayout.setTitle(city + ", " + country);
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
 
-                //scrollingTempTxt.setText(currentCity);
-
-                collapsingToolbarLayout.setTitle(city + ", " + country);
+                getWeatherInfo();
 
                 viewPager = findViewById(R.id.view_pager);
                 setupViewPager(viewPager);
@@ -165,8 +174,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(WeatherTodayFragment.getInstance(), "Today");
-        adapter.addFragment(Weather5DayFragment.getInstance(), "7-Day Forecast");
+        adapter.addFragment(Weather5DayFragment.getInstance(), "5-Day Forecast");
+        adapter.addFragment(WeatherGraphFragment.getInstance(), "Weather graphs");
 
         viewPager.setAdapter(adapter);
     }
@@ -180,4 +189,47 @@ public class MainActivity extends AppCompatActivity {
         locationRequest.setSmallestDisplacement(10.0f);
     }
 
+
+    public void getWeatherInfo() {
+        compositeDisposable = new CompositeDisposable();
+        retrofit = RetrofitClient.getInstance();
+        mService = retrofit.create(IOpenWeatherMap.class);
+        compositeDisposable.add(mService.getWeatherByLatLng(String.valueOf(Common.current_location.getLatitude()),
+                String.valueOf(Common.current_location.getLongitude()),
+                Common.APP_ID,
+                "metric")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(weatherResult -> {
+                    // Load images
+                    Picasso.get().load("https://openweathermap.org/img/w/" +
+                            weatherResult.getWeather().get(0).getIcon() +
+                            ".png").into(scrollingImageView);
+
+                    // Load information
+                    collapsingToolbarLayout.setTitle(weatherResult.getName() + ", " + weatherResult.getSys().getCountry());
+                    scrollingDescTxt.setText(weatherResult.getWeather().get(0).getDescription());
+                    Integer temp = weatherResult.getMain().getTemp().intValue();
+                    scrollingTempTxt.setText(String.valueOf(temp));
+                    scrollingDateTxt.setText(Common.convertUnixToDate(weatherResult.getDt()));
+                    scrollingPressureTxt.setText("Pressure: " + weatherResult.getMain().getPressure() + " hpa");
+                    scrollingHumidityTxt.setText("Humidity: " + weatherResult.getMain().getHumidity() + " %");
+                    scrollingWindTxt.setText("Wind: " + weatherResult.getWind().getSpeed() + " m/s");
+                    scrollingSunriseTxt.setText("Sunrise: " + Common.convertUnixToHour(weatherResult.getSys().getSunrise()) + "h");
+                    scrollingSunsetTxt.setText("Sunset: " + Common.convertUnixToHour(weatherResult.getSys().getSunset()) + "h");
+
+                    /** TODO: Displaying only current Temp, not Min and Max values
+                     *  the problem could be in JSON response
+                     * */
+//                    Integer minTemp = weatherResult.getMain().getTempMin().intValue();
+//                    Integer maxTemp = weatherResult.getMain().getTempMax().intValue();
+//                    scrollingMinMaxTempTxt.setText(minTemp + "/" + maxTemp);
+//                    Log.d("WeatherInfo", String.valueOf(weatherResult.getMain().getHumidity()));
+
+                }, throwable -> {
+                    Toast.makeText(getApplicationContext(), "" + throwable.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.d("Today", "" + throwable.getMessage());
+                })
+        );
+    }
 }

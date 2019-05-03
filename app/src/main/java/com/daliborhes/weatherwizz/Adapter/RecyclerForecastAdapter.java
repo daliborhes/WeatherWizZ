@@ -40,13 +40,18 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int position) {
 
-        Picasso.get().load(new StringBuilder("https://openweathermap.org/img/w/")
-                .append(weatherForecastResult.getList().get(position).getWeather().get(0).getIcon())
-                .append(".png").toString()).into(myViewHolder.forecastIcon);
+        Picasso.get().load("https://openweathermap.org/img/w/" +
+                weatherForecastResult.getList().get(position).getWeather().get(0).getIcon() +
+                ".png").into(myViewHolder.forecastIcon);
 
         myViewHolder.forecastDay.setText(Common.convertUnixToDay(weatherForecastResult.getList().get(position).getDt()));
         Integer temp = weatherForecastResult.getList().get(position).getMain().getTemp().intValue();
         myViewHolder.forecastTemp.setText(new StringBuilder(String.valueOf(temp)).append(" °C"));
+        myViewHolder.forecastHumidity.setText(new StringBuilder("Hum: " + weatherForecastResult.getList().get(position).getMain().getHumidity()).append(" %"));
+        myViewHolder.forecastPressure.setText(new StringBuilder("Press: " + weatherForecastResult.getList().get(position).getMain().getPressure()).append(" hpa"));
+        myViewHolder.forecastWind.setText("Wind: " + weatherForecastResult.getList().get(position).getWind().getSpeed() + " m/s");
+//        myViewHolder.forecastDay.setText(weatherForecastResult.getList().get(0).getMain().getTempMax().intValue() + "/" +
+//                weatherForecastResult.getList().get(0).getMain().getTempMin().intValue());
 
     }
 
@@ -58,7 +63,7 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView forecastIcon;
-        private TextView forecastDay, forecastTemp;
+        private TextView forecastDay, forecastTemp, forecastHumidity, forecastPressure, forecastWind;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -66,6 +71,9 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
             forecastIcon = itemView.findViewById(R.id.day_icon);
             forecastDay = itemView.findViewById(R.id.days_txt);
             forecastTemp = itemView.findViewById(R.id.temperature_day_txt);
+            forecastHumidity = itemView.findViewById(R.id.forecast_humidity_item_txt);
+            forecastPressure = itemView.findViewById(R.id.forecast_pressure_item_txt);
+            forecastWind = itemView.findViewById(R.id.forecast_wind_item_txt);
 
         }
     }

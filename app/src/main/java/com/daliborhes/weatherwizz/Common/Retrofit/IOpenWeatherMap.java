@@ -25,9 +25,4 @@ public interface IOpenWeatherMap {
                                                               @Query("appid") String appId,
                                                               @Query("units") String unit);
 
-    @GET("forecast/hourly")
-    Observable<WeatherForecastResult> getDailyForecastByLatLng(@Query("lat") String lat,
-                                                              @Query("lon") String lng,
-                                                              @Query("appid") String appId,
-                                                              @Query("units") String unit);
 }
