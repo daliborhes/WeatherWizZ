@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ import com.daliborhes.weatherwizz.R;
 import com.squareup.picasso.Picasso;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
@@ -45,7 +47,7 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
                 ".png").into(myViewHolder.forecastIcon);
 
         myViewHolder.forecastDay.setText(Common.convertUnixToDay(weatherForecastResult.getList().get(position).getDt()));
-        Integer temp = weatherForecastResult.getList().get(position).getMain().getTemp().intValue();
+        int temp = (int) Math.round(weatherForecastResult.getList().get(position).getMain().getTemp());
         myViewHolder.forecastTemp.setText(new StringBuilder(String.valueOf(temp)).append(" °C"));
         myViewHolder.forecastHumidity.setText(new StringBuilder("Hum: " + weatherForecastResult.getList().get(position).getMain().getHumidity()).append(" %"));
         myViewHolder.forecastPressure.setText(new StringBuilder("Press: " + weatherForecastResult.getList().get(position).getMain().getPressure()).append(" hpa"));
@@ -53,6 +55,7 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
 //        myViewHolder.forecastDay.setText(weatherForecastResult.getList().get(0).getMain().getTempMax().intValue() + "/" +
 //                weatherForecastResult.getList().get(0).getMain().getTempMin().intValue());
 
+        myViewHolder.container.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_transition_from_left));
     }
 
     @Override
@@ -64,6 +67,7 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
 
         private ImageView forecastIcon;
         private TextView forecastDay, forecastTemp, forecastHumidity, forecastPressure, forecastWind;
+        private CardView container;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -74,6 +78,7 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
             forecastHumidity = itemView.findViewById(R.id.forecast_humidity_item_txt);
             forecastPressure = itemView.findViewById(R.id.forecast_pressure_item_txt);
             forecastWind = itemView.findViewById(R.id.forecast_wind_item_txt);
+            container = itemView.findViewById(R.id.container);
 
         }
     }

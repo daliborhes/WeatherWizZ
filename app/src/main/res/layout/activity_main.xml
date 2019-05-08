@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/swipe_refresh_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
+    android:background="#0E283F"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainActivity">
 
@@ -19,13 +20,14 @@
             android:id="@+id/app_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/wall"
+            android:fitsSystemWindows="true"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar_layout"
                 android:layout_width="match_parent"
-                android:layout_height="384dp"
+                android:layout_height="400dp"
+                android:background="@drawable/wallpaper1"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
                 <androidx.appcompat.widget.Toolbar
@@ -53,31 +55,20 @@
 
                     <TextView
                         android:id="@+id/scrolling_temp_txt"
-                        android:layout_width="100dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
-                        android:text="-"
                         android:gravity="center"
-                        android:textColor="@color/textColorPrimary"
                         android:textSize="78sp"
+                        android:textColor="@color/textColorPrimary"
                         app:layout_constraintEnd_toEndOf="@id/scrolling_date_txt"
                         app:layout_constraintStart_toStartOf="@+id/scrolling_date_txt"
                         app:layout_constraintTop_toBottomOf="@+id/scrolling_date_txt" />
 
                     <TextView
+                        android:id="@+id/scrolling_celsius_txt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="°C"
-                        android:textColor="@color/textColorPrimary"
-                        android:textSize="24sp"
-                        app:layout_constraintStart_toEndOf="@+id/scrolling_temp_txt"
-                        app:layout_constraintTop_toTopOf="@+id/scrolling_temp_txt" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="°C"
-                        android:textColor="@color/textColorPrimary"
                         android:textSize="24sp"
                         app:layout_constraintStart_toEndOf="@+id/scrolling_temp_txt"
                         app:layout_constraintTop_toTopOf="@+id/scrolling_temp_txt" />
@@ -86,7 +77,6 @@
                         android:id="@+id/scrolling_image_view"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:src="@drawable/ic_snow"
                         android:layout_marginEnd="24dp"
                         app:layout_constraintBottom_toTopOf="@+id/scrolling_minmax_temp_txt"
                         app:layout_constraintEnd_toStartOf="@+id/guideline"
@@ -97,20 +87,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
-                        android:text="-/-/-"
-                        android:textColor="@color/textColorPrimary"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/guideline"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/scrolling_desc_txt"
-                        android:layout_width="wrap_content"
+                        android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
-                        android:text="-"
+                        android:gravity="center"
                         android:textAllCaps="true"
-                        android:textColor="@color/textColorPrimary"
                         app:layout_constraintEnd_toStartOf="@+id/guideline"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -119,13 +106,13 @@
                         android:id="@+id/scrolling_humidity_txt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Humidity: -"
-                        android:textColor="@color/textColorPrimary"
+                        android:layout_marginTop="48dp"
                         android:layout_marginEnd="24dp"
+                        android:gravity="center"
+                        android:textColor="@color/textColorPrimary"
                         app:layout_constraintEnd_toStartOf="@+id/guideline"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/scrolling_sunrise_txt" />
+                        app:layout_constraintTop_toBottomOf="@+id/scrolling_image_view" />
 
                     <TextView
                         android:id="@+id/scrolling_pressure_txt"
@@ -133,7 +120,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:gravity="center"
-                        android:text="Pressure: -"
                         android:textColor="@color/textColorPrimary"
                         app:layout_constraintStart_toStartOf="@+id/scrolling_humidity_txt"
                         app:layout_constraintTop_toBottomOf="@+id/scrolling_humidity_txt" />
@@ -145,7 +131,6 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="24dp"
                         android:gravity="center"
-                        android:text="Wind: -"
                         android:textColor="@color/textColorPrimary"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/scrolling_pressure_txt"
@@ -155,20 +140,17 @@
                         android:id="@+id/scrolling_sunrise_txt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp"
-                        android:text="Sunrise: -"
                         android:textColor="@color/textColorPrimary"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.423"
                         app:layout_constraintStart_toStartOf="@+id/guideline"
-                        app:layout_constraintTop_toBottomOf="@+id/scrolling_minmax_temp_txt" />
+                        app:layout_constraintTop_toTopOf="@+id/scrolling_pressure_txt" />
 
                     <TextView
                         android:id="@+id/scrolling_sunset_txt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Sunset: -"
                         android:textColor="@color/textColorPrimary"
                         app:layout_constraintStart_toStartOf="@+id/scrolling_sunrise_txt"
                         app:layout_constraintTop_toBottomOf="@+id/scrolling_sunrise_txt" />
@@ -191,6 +173,7 @@
                 android:id="@+id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
+                android:background="#0E283F"
                 app:tabGravity="fill"
                 app:tabMode="fixed" />
 

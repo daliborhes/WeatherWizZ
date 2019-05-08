@@ -4,5 +4,14 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="today_weather_text">Today Weather</string>
     <string name="day_16_weather_text">16-Day Forecast</string>
+    <string name="pressure">Pressure</string>
+    <string name="humidity">Humidity</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="wind">Wind</string>
+    <string name="sunset">Sunset</string>
+    <string name="wind_speed_unit">m/s</string>
+    <string name="hour_unit">h</string>
+    <string name="pressure_unit">hpa</string>
+    <string name="percent">%</string>
 
 </resources>

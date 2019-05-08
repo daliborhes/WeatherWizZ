@@ -53,7 +53,7 @@ public class Weather5DayFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View itemView = inflater.inflate(R.layout.fragment_weather16_day, container, false);
+        View itemView = inflater.inflate(R.layout.fragment_weather_5_day, container, false);
 
         forecastRecyclerView = itemView.findViewById(R.id.forecast_recyclerview);
 
@@ -77,7 +77,7 @@ public class Weather5DayFragment extends Fragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::displayForecast5Day,
-                        throwable -> Log.d("Forecast", "Error: " + throwable.getMessage())));
+                        throwable -> Log.d("5DayForecast", "Error: " + throwable.getMessage())));
     }
 
     private void displayForecast5Day(WeatherForecastResult weatherForecastResult) {

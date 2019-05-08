@@ -2,24 +2,32 @@ package com.daliborhes.weatherwizz.Fragments;
 
 
 import android.os.Bundle;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 
 import com.daliborhes.weatherwizz.Common.Common;
 import com.daliborhes.weatherwizz.Common.Retrofit.IOpenWeatherMap;
 import com.daliborhes.weatherwizz.Common.Retrofit.RetrofitClient;
 import com.daliborhes.weatherwizz.R;
-import com.squareup.picasso.Picasso;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -35,24 +43,20 @@ public class WeatherGraphFragment extends Fragment {
 
     Unbinder unbinder;
 
-    @BindView(R.id.weather_image) ImageView img_weather;
-    @BindView(R.id.humidity_txt) TextView humidity_txt;
-    @BindView(R.id.sunrise_txt) TextView sunrise_txt;
-    @BindView(R.id.sunset_txt) TextView sunset_txt;
-    @BindView(R.id.time_txt) TextView datetime_txt;
-    @BindView(R.id.pressure_txt) TextView pressure_txt;
-    @BindView(R.id.temperature_txt) TextView temperature_txt;
-    @BindView(R.id.description_txt) TextView description_txt;
-    @BindView(R.id.wind_txt) TextView wind_txt;
-
-    @BindView(R.id.progress_bar) ProgressBar progressBar;
-    @BindView(R.id.weather_panel)
-    ConstraintLayout weather_panel;
+    @BindView(R.id.graph_temperature)
+    LineChart lineChartTemp;
+    @BindView(R.id.graph_wind)
+    LineChart lineChartWind;
+    @BindView(R.id.graph_temperature_txt)
+    TextView graph_title;
 
     CompositeDisposable compositeDisposable;
     IOpenWeatherMap mService;
 
     static WeatherGraphFragment instance;
+    private ArrayList<Entry> lineValuesTemp = new ArrayList<>();
+    private ArrayList<Entry> lineValuesWind = new ArrayList<>();
+
 
     public static WeatherGraphFragment getInstance() {
         if (instance == null) {
@@ -83,38 +87,57 @@ public class WeatherGraphFragment extends Fragment {
     }
 
     public void getWeatherInfo() {
-        compositeDisposable.add(mService.getWeatherByLatLng(String.valueOf(Common.current_location.getLatitude()),
+        compositeDisposable.add(mService.get5DayForecastByLatLng(String.valueOf(Common.current_location.getLatitude()),
                 String.valueOf(Common.current_location.getLongitude()),
                 Common.APP_ID,
                 "metric")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(weatherResult -> {
-                    // Load images
-                    Picasso.get().load("https://openweathermap.org/img/w/" +
-                            weatherResult.getWeather().get(0).getIcon() +
-                            ".png").into(img_weather);
 
                     // Load information
-                    //city_name_txt.setText(weatherResult.getName());
-                    description_txt.setText(weatherResult.getWeather().get(0).getDescription());
-                    Integer temp = weatherResult.getMain().getTemp().intValue();
-                    temperature_txt.setText(String.valueOf(temp));
-                    datetime_txt.setText(Common.convertUnixToDate(weatherResult.getDt()));
-                    pressure_txt.setText(weatherResult.getMain().getPressure() + " hpa");
-                    humidity_txt.setText(weatherResult.getMain().getHumidity() + " %");
-                    sunrise_txt.setText(Common.convertUnixToHour(weatherResult.getSys().getSunrise()));
-                    sunset_txt.setText(Common.convertUnixToHour(weatherResult.getSys().getSunset()));
+                    for (int i = 0; i < weatherResult.getList().size(); i++) {
+                        int temp = (int) Math.round(weatherResult.getList().get(i).getMain().getTemp());
+                        int hour = weatherResult.getList().get(i).getDt();
+                        double windSpeed = weatherResult.getList().get(i).getWind().getSpeed();
+                        float windSpeedFloat = (float) windSpeed;
+                        Log.d("JSON temp", "getWeatherInfo: " + temp + " " + i + " " + hour + " " + windSpeedFloat);
 
-                    wind_txt.setText(weatherResult.getWind().getSpeed() + " m/s");
+                        lineValuesTemp.add(new Entry(hour, temp));
+                        lineValuesWind.add(new Entry(hour, windSpeedFloat));
 
-                    // Display information
-                    weather_panel.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.GONE);
+                    }
+
+                    LineDataSet setTemp = new LineDataSet(lineValuesTemp, "Temperature in °C");
+                    setTemp.setColor(R.color.colorPrimary);
+                    setTemp.setCircleColor(R.color.colorPrimary);
+
+                    LineDataSet setWind = new LineDataSet(lineValuesWind, "Wind in m/s");
+                    setWind.setColor(R.color.colorPrimary);
+                    setWind.setCircleColor(R.color.colorPrimary);
+
+
+                    LineData dataTemp = new LineData(setTemp);
+                    lineChartTemp.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+                    lineChartTemp.animateXY(0, 3000);
+                    lineChartTemp.setMaxVisibleValueCount(50);
+                    lineChartTemp.setPinchZoom(false);
+                    lineChartTemp.setDrawGridBackground(true);
+                    lineChartTemp.getLegend().setEnabled(false);
+                    lineChartTemp.setData(dataTemp);
+
+                    LineData datawind = new LineData(setWind);
+                    lineChartWind.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+                    lineChartWind.animateXY(0, 3000);
+                    lineChartWind.setMaxVisibleValueCount(50);
+                    lineChartWind.setPinchZoom(false);
+                    lineChartWind.setDrawGridBackground(true);
+                    lineChartWind.getLegend().setEnabled(false);
+                    lineChartWind.setData(datawind);
 
                 }, throwable -> {
                     Toast.makeText(getActivity(), "" + throwable.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.d("Today", "" + throwable.getMessage().toString());
+                    Log.d("GraphFragment", "" + throwable.getMessage());
                 })
         );
     }
