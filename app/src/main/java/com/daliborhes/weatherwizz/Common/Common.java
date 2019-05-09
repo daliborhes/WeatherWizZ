@@ -34,5 +34,4 @@ public class Common {
         String formatted = sdf.format(date);
         return formatted;
     }
-
 }

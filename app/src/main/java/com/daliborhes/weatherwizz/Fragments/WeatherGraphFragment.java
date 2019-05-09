@@ -1,6 +1,8 @@
 package com.daliborhes.weatherwizz.Fragments;
 
 
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,24 +11,29 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.daliborhes.weatherwizz.Common.Common;
 import com.daliborhes.weatherwizz.Common.Retrofit.IOpenWeatherMap;
 import com.daliborhes.weatherwizz.Common.Retrofit.RetrofitClient;
 import com.daliborhes.weatherwizz.R;
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.utils.Utils;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,7 +63,6 @@ public class WeatherGraphFragment extends Fragment {
     static WeatherGraphFragment instance;
     private ArrayList<Entry> lineValuesTemp = new ArrayList<>();
     private ArrayList<Entry> lineValuesWind = new ArrayList<>();
-
 
     public static WeatherGraphFragment getInstance() {
         if (instance == null) {
@@ -97,43 +103,92 @@ public class WeatherGraphFragment extends Fragment {
 
                     // Load information
                     for (int i = 0; i < weatherResult.getList().size(); i++) {
-                        int temp = (int) Math.round(weatherResult.getList().get(i).getMain().getTemp());
+                        double temp = weatherResult.getList().get(i).getMain().getTemp();
+                        float tempFloat = (float) temp;
                         int hour = weatherResult.getList().get(i).getDt();
                         double windSpeed = weatherResult.getList().get(i).getWind().getSpeed();
                         float windSpeedFloat = (float) windSpeed;
                         Log.d("JSON temp", "getWeatherInfo: " + temp + " " + i + " " + hour + " " + windSpeedFloat);
 
-                        lineValuesTemp.add(new Entry(hour, temp));
+                        lineValuesTemp.add(new Entry(hour, tempFloat));
                         lineValuesWind.add(new Entry(hour, windSpeedFloat));
 
                     }
 
+                    // Hourly temperature chart
                     LineDataSet setTemp = new LineDataSet(lineValuesTemp, "Temperature in °C");
-                    setTemp.setColor(R.color.colorPrimary);
-                    setTemp.setCircleColor(R.color.colorPrimary);
-
-                    LineDataSet setWind = new LineDataSet(lineValuesWind, "Wind in m/s");
-                    setWind.setColor(R.color.colorPrimary);
-                    setWind.setCircleColor(R.color.colorPrimary);
-
+                    setTemp.setColor(R.color.colorPrimaryDark);
+                    setTemp.setDrawFilled(true);
+                    if (Utils.getSDKInt() >= 18) {
+                        // fill drawable only supported on api level 18 and above
+                        Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.fade_red);
+                        setTemp.setFillDrawable(drawable);
+                    }
+                    else {
+                        setTemp.setFillColor(Color.BLACK);
+                    }
+                    setTemp.setCircleColor(R.color.colorPrimaryDark);
+                    setTemp.setValueTextSize(12);
 
                     LineData dataTemp = new LineData(setTemp);
+                    lineChartTemp.getXAxis().setLabelCount(lineValuesTemp.size());
                     lineChartTemp.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-                    lineChartTemp.animateXY(0, 3000);
-                    lineChartTemp.setMaxVisibleValueCount(50);
+                    lineChartTemp.getXAxis().setValueFormatter(new ValueFormatter() {
+                        @Override
+                        public String getFormattedValue(float value) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("EEE HH:mm", Locale.ENGLISH);
+                            return sdf.format(new Date((long) (value * 1000)));
+                        }
+                    });
+                    lineChartTemp.setDragEnabled(false);
+                    lineChartTemp.getLegend().setEnabled(false);
+                    lineChartTemp.getDescription().setEnabled(false);
+                    lineChartTemp.animateXY(0, 2000);
                     lineChartTemp.setPinchZoom(false);
-                    lineChartTemp.setDrawGridBackground(true);
+                    lineChartTemp.getAxisLeft().setEnabled(false);
+                    lineChartTemp.getAxisRight().setEnabled(false);
+                    lineChartTemp.setDrawGridBackground(false);
                     lineChartTemp.getLegend().setEnabled(false);
                     lineChartTemp.setData(dataTemp);
+                    lineChartTemp.invalidate();
+
+
+                    // Hourly wind speed chart
+                    LineDataSet setWind = new LineDataSet(lineValuesWind, "Wind in m/s");
+                    setWind.setColor(R.color.colorPrimaryDark);
+                    setWind.setCircleColor(R.color.colorPrimaryDark);
+                    setWind.setDrawFilled(true);
+                    if (Utils.getSDKInt() >= 18) {
+                        // fill drawable only supported on api level 18 and above
+                        Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.fade_blue);
+                        setWind.setFillDrawable(drawable);
+                    }
+                    else {
+                        setWind.setFillColor(Color.BLACK);
+                    }
+                    setWind.setValueTextSize(12);
+
 
                     LineData datawind = new LineData(setWind);
+                    lineChartWind.getXAxis().setLabelCount(lineValuesWind.size());
                     lineChartWind.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-                    lineChartWind.animateXY(0, 3000);
-                    lineChartWind.setMaxVisibleValueCount(50);
+                    lineChartWind.getXAxis().setValueFormatter(new ValueFormatter() {
+                        @Override
+                        public String getFormattedValue(float value) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("EEE HH:mm");
+                            return sdf.format(new Date((long) (value * 1000)));
+                        }
+                    });
+                    lineChartWind.getLegend().setEnabled(false);
+                    lineChartWind.getDescription().setEnabled(false);
+                    lineChartWind.getAxisLeft().setEnabled(false);
+                    lineChartWind.getAxisRight().setEnabled(false);
+                    lineChartWind.animateXY(0, 2000);
                     lineChartWind.setPinchZoom(false);
-                    lineChartWind.setDrawGridBackground(true);
+                    lineChartWind.setDrawGridBackground(false);
                     lineChartWind.getLegend().setEnabled(false);
                     lineChartWind.setData(datawind);
+                    lineChartWind.invalidate();
 
                 }, throwable -> {
                     Toast.makeText(getActivity(), "" + throwable.getMessage(), Toast.LENGTH_LONG).show();
