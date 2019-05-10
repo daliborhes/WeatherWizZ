@@ -1,7 +1,13 @@
-package com.daliborhes.weatherwizz.Model;
+package com.daliborhes.weatherwizz.Model.forecast5DayWeather;
 
+import com.daliborhes.weatherwizz.Model.Clouds;
+import com.daliborhes.weatherwizz.Model.Main;
+import com.daliborhes.weatherwizz.Model.Sys;
+import com.daliborhes.weatherwizz.Model.Weather;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 /**
  * Created by Dalibor J. Stanković on 24.04.2019.
@@ -17,7 +23,7 @@ public class MyList {
     private Main main;
     @SerializedName("weather")
     @Expose
-    private java.util.List<Weather> weather = null;
+    private List<Weather> weather = null;
     @SerializedName("clouds")
     @Expose
     private Clouds clouds;
@@ -50,11 +56,11 @@ public class MyList {
         this.main = main;
     }
 
-    public java.util.List<Weather> getWeather() {
+    public List<Weather> getWeather() {
         return weather;
     }
 
-    public void setWeather(java.util.List<Weather> weather) {
+    public void setWeather(List<Weather> weather) {
         this.weather = weather;
     }
 

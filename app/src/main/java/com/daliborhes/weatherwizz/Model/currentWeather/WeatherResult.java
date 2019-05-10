@@ -1,5 +1,10 @@
-package com.daliborhes.weatherwizz.Model;
+package com.daliborhes.weatherwizz.Model.currentWeather;
 
+import com.daliborhes.weatherwizz.Model.Clouds;
+import com.daliborhes.weatherwizz.Model.Coord;
+import com.daliborhes.weatherwizz.Model.Main;
+import com.daliborhes.weatherwizz.Model.Sys;
+import com.daliborhes.weatherwizz.Model.Weather;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -25,7 +30,7 @@ public class WeatherResult {
     private Main main;
     @SerializedName("wind")
     @Expose
-    private Wind wind;
+    private WindCurrent wind;
     @SerializedName("clouds")
     @Expose
     private Clouds clouds;
@@ -81,11 +86,11 @@ public class WeatherResult {
         this.main = main;
     }
 
-    public Wind getWind() {
+    public WindCurrent getWind() {
         return wind;
     }
 
-    public void setWind(Wind wind) {
+    public void setWind(WindCurrent wind) {
         this.wind = wind;
     }
 

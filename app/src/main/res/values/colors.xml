@@ -2,12 +2,13 @@
 <resources>
     <color name="colorPrimary">#125688</color>
     <color name="colorPrimaryDark">#0E283F</color>
-    <color name="colorAccent">	#0C1125</color>
+    <color name="colorAccent">#0C1125</color>
     <color name="textColorPrimary">#ffffff</color>
     <color name="windowBackground">#ffffff</color>
     <color name="navigationBarColor">#000000</color>
 
     <color name="orange">#ffaf1c</color>
+    <color name="deep_orange">#F4511E</color>
     <color name="dark_brown">#230004</color>
     <color name="white">#ffffff</color>
 </resources>

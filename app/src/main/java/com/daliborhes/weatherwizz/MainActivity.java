@@ -24,6 +24,7 @@ import com.daliborhes.weatherwizz.Common.Retrofit.IOpenWeatherMap;
 import com.daliborhes.weatherwizz.Common.Retrofit.RetrofitClient;
 import com.daliborhes.weatherwizz.Fragments.Weather5DayFragment;
 import com.daliborhes.weatherwizz.Fragments.WeatherGraphFragment;
+import com.daliborhes.weatherwizz.application.AppHelp;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -59,26 +60,41 @@ public class MainActivity extends AppCompatActivity {
     private LocationCallback locationCallback;
     private LocationRequest locationRequest;
 
-    @BindView(R.id.scrolling_temp_txt) TextView scrollingTempTxt;
-    @BindView(R.id.scrolling_celsius_txt) TextView scrollingCelsiusTxt;
-    @BindView(R.id.scrolling_minmax_temp_txt) TextView scrollingMinMaxTempTxt;
-    @BindView(R.id.scrolling_desc_txt) TextView scrollingDescTxt;
-    @BindView(R.id.scrolling_date_txt) TextView scrollingDateTxt;
-    @BindView(R.id.scrolling_humidity_txt) TextView scrollingHumidityTxt;
-    @BindView(R.id.scrolling_pressure_txt) TextView scrollingPressureTxt;
-    @BindView(R.id.scrolling_wind_txt) TextView scrollingWindTxt;
-    @BindView(R.id.scrolling_sunrise_txt) TextView scrollingSunriseTxt;
-    @BindView(R.id.scrolling_sunset_txt) TextView scrollingSunsetTxt;
-    @BindView(R.id.scrolling_image_view) ImageView scrollingImageView;
-    @BindView(R.id.app_bar_layout) AppBarLayout appBarLayout;
-    @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.root_view) CoordinatorLayout rootLayout;
-    @BindView(R.id.collapsing_toolbar_layout) CollapsingToolbarLayout collapsingToolbarLayout;
+    @BindView(R.id.scrolling_temp_txt)
+    TextView scrollingTempTxt;
+    @BindView(R.id.scrolling_celsius_txt)
+    TextView scrollingCelsiusTxt;
+    @BindView(R.id.scrolling_minmax_temp_txt)
+    TextView scrollingMinMaxTempTxt;
+    @BindView(R.id.scrolling_desc_txt)
+    TextView scrollingDescTxt;
+    @BindView(R.id.scrolling_date_txt)
+    TextView scrollingDateTxt;
+    @BindView(R.id.scrolling_humidity_txt)
+    TextView scrollingHumidityTxt;
+    @BindView(R.id.scrolling_pressure_txt)
+    TextView scrollingPressureTxt;
+    @BindView(R.id.scrolling_wind_txt)
+    TextView scrollingWindTxt;
+    @BindView(R.id.scrolling_sunrise_txt)
+    TextView scrollingSunriseTxt;
+    @BindView(R.id.scrolling_sunset_txt)
+    TextView scrollingSunsetTxt;
+    @BindView(R.id.scrolling_image_view)
+    ImageView scrollingImageView;
+    @BindView(R.id.app_bar_layout)
+    AppBarLayout appBarLayout;
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.root_view)
+    CoordinatorLayout rootLayout;
+    @BindView(R.id.collapsing_toolbar_layout)
+    CollapsingToolbarLayout collapsingToolbarLayout;
 
     private IOpenWeatherMap mService;
     private CompositeDisposable compositeDisposable;
     private Retrofit retrofit;
-    private double directionInDegrees;
+    private String serverIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,26 +153,6 @@ public class MainActivity extends AppCompatActivity {
 
                 Common.current_location = locationResult.getLastLocation();
 
-
-                /** Deprecated method because the address(city) is retrieved via OpenWeatherMap API */
-//                Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
-//                String city = null;
-//                String country = null;
-//                try {
-//                    List<Address> adresses = geocoder.getFromLocation(Common.current_location.getLatitude(),
-//                            Common.current_location.getLongitude(),
-//                            1);
-//                    Address obj = adresses.get(0);
-//                    city = obj.getLocality();
-//                    country = obj.getCountryCode();
-//
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                collapsingToolbarLayout.setTitle(city + ", " + country);
-
-
                 getWeatherInfo();
 
                 viewPager = findViewById(R.id.view_pager);
@@ -164,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
                 tabLayout = findViewById(R.id.tabs);
                 tabLayout.setupWithViewPager(viewPager);
 
-                // Log
                 Log.d("Location", locationResult.getLastLocation().getLatitude() + "/" + locationResult.getLastLocation().getLongitude());
             }
         };
@@ -198,51 +193,115 @@ public class MainActivity extends AppCompatActivity {
                 String.valueOf(Common.current_location.getLongitude()),
                 Common.APP_ID,
                 "metric")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(weatherResult -> {
-                    // Load images
-                    Picasso.get().load("https://openweathermap.org/img/w/" +
-                            weatherResult.getWeather().get(0).getIcon() +
-                            ".png").into(scrollingImageView);
-                    scrollingImageView.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_left));
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(weatherResult -> {
 
-                    // Load information
-                    collapsingToolbarLayout.setTitle(weatherResult.getName() + ", " + weatherResult.getSys().getCountry());
-                    scrollingCelsiusTxt.setText("°C");
-                    scrollingCelsiusTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_right));
-                    scrollingDescTxt.setText(weatherResult.getWeather().get(0).getDescription());
-                    scrollingDescTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_left));
-                    int temp = (int) Math.round(weatherResult.getMain().getTemp());
-                    scrollingTempTxt.setText(String.valueOf(temp));
-                    scrollingTempTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_right));
-                    scrollingDateTxt.setText(Common.convertUnixToDate(weatherResult.getDt()));
-                    scrollingDateTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_right));
-                    scrollingPressureTxt.setText("Pressure: " + weatherResult.getMain().getPressure() + " hpa");
-                    scrollingPressureTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_left));
-                    scrollingHumidityTxt.setText("Humidity: " + weatherResult.getMain().getHumidity() + " %");
-                    scrollingHumidityTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_left));
-                    scrollingWindTxt.setText("Wind: " + weatherResult.getWind().getSpeed() + " m/s");
-                    scrollingWindTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_left));
-                    scrollingSunriseTxt.setText("Sunrise: " + Common.convertUnixToHour(weatherResult.getSys().getSunrise()) + "h");
-                    scrollingSunriseTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_right));
-                    scrollingSunsetTxt.setText("Sunset: " + Common.convertUnixToHour(weatherResult.getSys().getSunset()) + "h");
-                    scrollingSunsetTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_right));
+                            // Load images
+                            serverIcon = weatherResult.getWeather().get(0).getIcon();
+                            switchIcons();
+                            scrollingImageView.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_left));
+
+                            // Load information
+                            collapsingToolbarLayout.setTitle(weatherResult.getName() + ", " + weatherResult.getSys().getCountry());
+                            scrollingCelsiusTxt.setText("°C");
+                            scrollingCelsiusTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_right));
+                            scrollingDescTxt.setText(weatherResult.getWeather().get(0).getDescription());
+                            scrollingDescTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_left));
+                            int temp = (int) Math.round(weatherResult.getMain().getTemp());
+                            scrollingTempTxt.setText(String.valueOf(temp));
+                            scrollingTempTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_right));
+                            scrollingDateTxt.setText(Common.convertUnixToDate(weatherResult.getDt()));
+                            scrollingDateTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_right));
+                            scrollingPressureTxt.setText(getString(R.string.pressure) + " " + weatherResult.getMain().getPressure() + getString(R.string.pressure_unit));
+                            scrollingPressureTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_left));
+                            scrollingHumidityTxt.setText(getString(R.string.humidity) + " " + weatherResult.getMain().getHumidity() + getString(R.string.percent));
+                            scrollingHumidityTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_left));
+                            scrollingWindTxt.setText(getString(R.string.wind) + " " + weatherResult.getWind().getSpeed() + " " + getString(R.string.wind_speed_unit)
+                                    + ", " + AppHelp.convertDegreeToCardinalDirection(weatherResult.getWind().getDeg()));
+                            scrollingWindTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_left));
+                            scrollingSunriseTxt.setText(getString(R.string.sunrise) + " " + Common.convertUnixToHour(weatherResult.getSys().getSunrise()) + getString(R.string.hour_unit));
+                            scrollingSunriseTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_right));
+                            scrollingSunsetTxt.setText(getString(R.string.sunset) + " " + Common.convertUnixToHour(weatherResult.getSys().getSunset()) + getString(R.string.hour_unit));
+                            scrollingSunsetTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_right));
 
 
-                    /** TODO: Displaying only current Temp, not Min and Max values
-                     *  the problem could be in JSON response
-                     * */
+                            /** TODO: Displaying only current Temp, not Min and Max values
+                             *  the problem could be in JSON response
+                             * */
 //                    int tempMax = (int) Math.round(weatherResult.getMain().getTempMax());
 //                    int tempMin = (int) Math.round(weatherResult.getMain().getTempMin());
 //                    scrollingMinMaxTempTxt.setText(tempMin + "/" + tempMax);
 //                    Log.d("WeatherInfo", String.valueOf(weatherResult.getMain().getHumidity()));
 
-                }, throwable -> {
-                    Toast.makeText(getApplicationContext(), "" + throwable.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.d("Today", "" + throwable.getMessage());
-                })
+                        }, throwable -> {
+                            Toast.makeText(getApplicationContext(), "" + throwable.getMessage(), Toast.LENGTH_LONG).show();
+                            Log.d("Today", "" + throwable.getMessage());
+                        })
         );
+    }
+
+    private void switchIcons() {
+        switch (serverIcon) {
+            case "01d":
+                scrollingImageView.setImageResource(R.drawable.day_sunny);
+                break;
+            case "02d":
+                scrollingImageView.setImageResource(R.drawable.day_cloudy);
+                break;
+            case "03d":
+                scrollingImageView.setImageResource(R.drawable.day_cloud);
+                break;
+            case "04d":
+                scrollingImageView.setImageResource(R.drawable.cloudy);
+                break;
+            case "09d":
+                scrollingImageView.setImageResource(R.drawable.showers);
+                break;
+            case "10d":
+                scrollingImageView.setImageResource(R.drawable.day_rain);
+                break;
+            case "11d":
+                scrollingImageView.setImageResource(R.drawable.thunderstorm);
+                break;
+            case "13d":
+                scrollingImageView.setImageResource(R.drawable.day_snow);
+                break;
+            case "50d":
+                scrollingImageView.setImageResource(R.drawable.day_fog);
+                break;
+            case "01n":
+                scrollingImageView.setImageResource(R.drawable.night_clear);
+                break;
+            case "02n":
+                scrollingImageView.setImageResource(R.drawable.night_cloudy);
+                break;
+            case "03n":
+                scrollingImageView.setImageResource(R.drawable.day_cloud);
+                break;
+            case "04n":
+                scrollingImageView.setImageResource(R.drawable.cloudy);
+                break;
+            case "09n":
+                scrollingImageView.setImageResource(R.drawable.showers);
+                break;
+            case "10n":
+                scrollingImageView.setImageResource(R.drawable.night_rain);
+                break;
+            case "11n":
+                scrollingImageView.setImageResource(R.drawable.thunderstorm);
+                break;
+            case "13n":
+                scrollingImageView.setImageResource(R.drawable.night_snow);
+                break;
+            case "50n":
+                scrollingImageView.setImageResource(R.drawable.night_fog);
+                break;
+            default:
+                Picasso.get().load("https://openweathermap.org/img/w/" + serverIcon + ".png")
+                        .into(scrollingImageView);
+                break;
+        }
     }
 
     @Override

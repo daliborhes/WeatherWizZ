@@ -1,6 +1,7 @@
 package com.daliborhes.weatherwizz.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,14 +9,18 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.daliborhes.weatherwizz.Common.Common;
-import com.daliborhes.weatherwizz.Model.WeatherForecastResult;
-import com.daliborhes.weatherwizz.R;
-import com.squareup.picasso.Picasso;
-
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.daliborhes.weatherwizz.Common.Common;
+import com.daliborhes.weatherwizz.Model.forecast5DayWeather.WeatherForecastResult;
+import com.daliborhes.weatherwizz.R;
+import com.daliborhes.weatherwizz.application.AppHelp;
+import com.squareup.picasso.Picasso;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by Dalibor J. Stanković on 23.04.2019.
@@ -25,6 +30,8 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
 
     private Context mContext;
     private WeatherForecastResult weatherForecastResult;
+    private String serverIcon;
+    private String localIcon = "something";
 
     public RecyclerForecastAdapter(Context mContext, WeatherForecastResult weatherForecastResult) {
         this.mContext = mContext;
@@ -42,16 +49,78 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int position) {
 
-        Picasso.get().load("https://openweathermap.org/img/w/" +
-                weatherForecastResult.getList().get(position).getWeather().get(0).getIcon() +
-                ".png").into(myViewHolder.forecastIcon);
+        serverIcon = weatherForecastResult.getList().get(position).getWeather().get(0).getIcon();
+
+        switch (serverIcon) {
+            case "01d":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.day_sunny);
+                break;
+            case "02d":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.day_cloudy);
+                break;
+            case "03d":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.day_cloud);
+                break;
+            case "04d":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.cloudy);
+                break;
+            case "09d":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.showers);
+                break;
+            case "10d":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.day_rain);
+                break;
+            case "11d":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.thunderstorm);
+                break;
+            case "13d":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.day_snow);
+                break;
+            case "50d":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.day_fog);
+                break;
+            case "01n":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.night_clear);
+                break;
+            case "02n":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.night_cloudy);
+                break;
+            case "03n":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.day_cloud);
+                break;
+            case "04n":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.cloudy);
+                break;
+            case "09n":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.showers);
+                break;
+            case "10n":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.night_rain);
+                break;
+            case "11n":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.thunderstorm);
+                break;
+            case "13n":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.night_snow);
+                break;
+            case "50n":
+                myViewHolder.forecastIcon.setImageResource(R.drawable.night_fog);
+                break;
+            default:
+                Picasso.get().load("https://openweathermap.org/img/w/" +
+                        weatherForecastResult.getList().get(position).getWeather().get(0).getIcon() +
+                        ".png").into(myViewHolder.forecastIcon);
+                break;
+        }
+
 
         myViewHolder.forecastDay.setText(Common.convertUnixToDay(weatherForecastResult.getList().get(position).getDt()));
         int temp = (int) Math.round(weatherForecastResult.getList().get(position).getMain().getTemp());
-        myViewHolder.forecastTemp.setText(new StringBuilder(String.valueOf(temp)).append(" °C"));
-        myViewHolder.forecastHumidity.setText(new StringBuilder("Hum: " + weatherForecastResult.getList().get(position).getMain().getHumidity()).append(" %"));
-        myViewHolder.forecastPressure.setText(new StringBuilder("Press: " + weatherForecastResult.getList().get(position).getMain().getPressure()).append(" hpa"));
-        myViewHolder.forecastWind.setText("Wind: " + weatherForecastResult.getList().get(position).getWind().getSpeed() + " m/s");
+        myViewHolder.forecastTemp.setText((temp) + " °C");
+        myViewHolder.forecastHumidity.setText(new StringBuilder("Humidity: " + weatherForecastResult.getList().get(position).getMain().getHumidity()).append("%"));
+        myViewHolder.forecastPressure.setText(new StringBuilder("Pressure: " + weatherForecastResult.getList().get(position).getMain().getPressure()).append(" hPa"));
+        myViewHolder.forecastWind.setText("Wind: " + weatherForecastResult.getList().get(position).getWind().getSpeed() + " m/s, " +
+                AppHelp.convertDegreeToCardinalDirection(weatherForecastResult.getList().get(position).getWind().getDeg()));
 //        myViewHolder.forecastDay.setText(weatherForecastResult.getList().get(0).getMain().getTempMax().intValue() + "/" +
 //                weatherForecastResult.getList().get(0).getMain().getTempMin().intValue());
 
@@ -65,20 +134,24 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView forecastIcon;
-        private TextView forecastDay, forecastTemp, forecastHumidity, forecastPressure, forecastWind;
-        private CardView container;
+        @BindView(R.id.day_icon)
+        ImageView forecastIcon;
+        @BindView(R.id.days_txt)
+        TextView forecastDay;
+        @BindView(R.id.temperature_day_txt)
+        TextView forecastTemp;
+        @BindView(R.id.forecast_humidity_item_txt)
+        TextView forecastHumidity;
+        @BindView(R.id.forecast_pressure_item_txt)
+        TextView forecastPressure;
+        @BindView(R.id.forecast_wind_item_txt)
+        TextView forecastWind;
+        @BindView(R.id.container)
+        CardView container;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            forecastIcon = itemView.findViewById(R.id.day_icon);
-            forecastDay = itemView.findViewById(R.id.days_txt);
-            forecastTemp = itemView.findViewById(R.id.temperature_day_txt);
-            forecastHumidity = itemView.findViewById(R.id.forecast_humidity_item_txt);
-            forecastPressure = itemView.findViewById(R.id.forecast_pressure_item_txt);
-            forecastWind = itemView.findViewById(R.id.forecast_wind_item_txt);
-            container = itemView.findViewById(R.id.container);
+            ButterKnife.bind(this, itemView);
 
         }
     }

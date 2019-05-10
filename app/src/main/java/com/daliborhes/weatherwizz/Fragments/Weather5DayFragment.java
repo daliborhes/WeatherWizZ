@@ -16,7 +16,7 @@ import com.daliborhes.weatherwizz.Adapter.RecyclerForecastAdapter;
 import com.daliborhes.weatherwizz.Common.Common;
 import com.daliborhes.weatherwizz.Common.Retrofit.IOpenWeatherMap;
 import com.daliborhes.weatherwizz.Common.Retrofit.RetrofitClient;
-import com.daliborhes.weatherwizz.Model.WeatherForecastResult;
+import com.daliborhes.weatherwizz.Model.forecast5DayWeather.WeatherForecastResult;
 import com.daliborhes.weatherwizz.R;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;

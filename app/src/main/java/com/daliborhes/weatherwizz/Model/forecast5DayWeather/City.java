@@ -1,5 +1,6 @@
-package com.daliborhes.weatherwizz.Model;
+package com.daliborhes.weatherwizz.Model.forecast5DayWeather;
 
+import com.daliborhes.weatherwizz.Model.Coord;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -11,7 +12,7 @@ public class City {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private long id;
     @SerializedName("name")
     @Expose
     private String name;
@@ -22,11 +23,11 @@ public class City {
     @Expose
     private String country;
 
-    public Integer getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(long id) {
         this.id = id;
     }
 

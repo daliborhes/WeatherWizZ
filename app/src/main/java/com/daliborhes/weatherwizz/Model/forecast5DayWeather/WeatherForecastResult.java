@@ -1,4 +1,4 @@
-package com.daliborhes.weatherwizz.Model;
+package com.daliborhes.weatherwizz.Model.forecast5DayWeather;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

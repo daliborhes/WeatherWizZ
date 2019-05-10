@@ -1,7 +1,7 @@
 package com.daliborhes.weatherwizz.Common.Retrofit;
 
-import com.daliborhes.weatherwizz.Model.WeatherForecastResult;
-import com.daliborhes.weatherwizz.Model.WeatherResult;
+import com.daliborhes.weatherwizz.Model.forecast5DayWeather.WeatherForecastResult;
+import com.daliborhes.weatherwizz.Model.currentWeather.WeatherResult;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;

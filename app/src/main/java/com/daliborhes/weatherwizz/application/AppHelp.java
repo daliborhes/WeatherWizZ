@@ -1,5 +1,9 @@
 package com.daliborhes.weatherwizz.application;
 
+import android.graphics.drawable.Drawable;
+
+import com.daliborhes.weatherwizz.R;
+
 /**
  * Created by Dalibor J. Stanković on 06.05.2019.
  */
