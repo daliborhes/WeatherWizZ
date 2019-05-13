@@ -1,7 +1,5 @@
 package com.daliborhes.weatherwizz.application;
 
-import android.graphics.drawable.Drawable;
-
 import com.daliborhes.weatherwizz.R;
 
 /**
@@ -47,6 +45,48 @@ public class AppHelp {
             cardinalDirection = "NNW";
         } else {
             cardinalDirection = "?";
+        }
+
+        return cardinalDirection;
+    }
+
+    public static int convertDegreeToCardinalDirectionImg(double directionInDegrees){
+        int cardinalDirection;
+        if( (directionInDegrees >= 348.75) && (directionInDegrees <= 360) ||
+                (directionInDegrees >= 0) && (directionInDegrees <= 11.25)    ){
+            cardinalDirection = R.drawable.direction_n;
+        } else if( (directionInDegrees >= 11.25 ) && (directionInDegrees <= 33.75)){
+            cardinalDirection = R.drawable.direction_ne;
+        } else if( (directionInDegrees >= 33.75 ) &&(directionInDegrees <= 56.25)){
+            cardinalDirection = R.drawable.direction_ne;
+        } else if( (directionInDegrees >= 56.25 ) && (directionInDegrees <= 78.75)){
+            cardinalDirection = R.drawable.direction_ne;
+        } else if( (directionInDegrees >= 78.75 ) && (directionInDegrees <= 101.25) ){
+            cardinalDirection = R.drawable.direction_e;
+        } else if( (directionInDegrees >= 101.25) && (directionInDegrees <= 123.75) ){
+            cardinalDirection = R.drawable.direction_se;
+        } else if( (directionInDegrees >= 123.75) && (directionInDegrees <= 146.25) ){
+            cardinalDirection = R.drawable.direction_se;
+        } else if( (directionInDegrees >= 146.25) && (directionInDegrees <= 168.75) ){
+            cardinalDirection = R.drawable.direction_se;
+        } else if( (directionInDegrees >= 168.75) && (directionInDegrees <= 191.25) ){
+            cardinalDirection = R.drawable.direction_s;
+        } else if( (directionInDegrees >= 191.25) && (directionInDegrees <= 213.75) ){
+            cardinalDirection = R.drawable.direction_sw;
+        } else if( (directionInDegrees >= 213.75) && (directionInDegrees <= 236.25) ){
+            cardinalDirection = R.drawable.direction_sw;
+        } else if( (directionInDegrees >= 236.25) && (directionInDegrees <= 258.75) ){
+            cardinalDirection = R.drawable.direction_sw;
+        } else if( (directionInDegrees >= 258.75) && (directionInDegrees <= 281.25) ){
+            cardinalDirection = R.drawable.direction_w;
+        } else if( (directionInDegrees >= 281.25) && (directionInDegrees <= 303.75) ){
+            cardinalDirection = R.drawable.direction_nw;
+        } else if( (directionInDegrees >= 303.75) && (directionInDegrees <= 326.25) ){
+            cardinalDirection = R.drawable.direction_nw;
+        } else if( (directionInDegrees >= 326.25) && (directionInDegrees <= 348.75) ){
+            cardinalDirection = R.drawable.direction_nw;
+        } else {
+            cardinalDirection = R.drawable.ic_circle;
         }
 
         return cardinalDirection;

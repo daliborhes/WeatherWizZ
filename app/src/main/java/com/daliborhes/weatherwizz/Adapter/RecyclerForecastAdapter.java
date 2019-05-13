@@ -1,7 +1,7 @@
 package com.daliborhes.weatherwizz.Adapter;
 
 import android.content.Context;
-import android.util.Log;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +31,6 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
     private Context mContext;
     private WeatherForecastResult weatherForecastResult;
     private String serverIcon;
-    private String localIcon = "something";
 
     public RecyclerForecastAdapter(Context mContext, WeatherForecastResult weatherForecastResult) {
         this.mContext = mContext;
@@ -116,15 +115,21 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
 
         myViewHolder.forecastDay.setText(Common.convertUnixToDay(weatherForecastResult.getList().get(position).getDt()));
         int temp = (int) Math.round(weatherForecastResult.getList().get(position).getMain().getTemp());
-        myViewHolder.forecastTemp.setText((temp) + " °C");
-        myViewHolder.forecastHumidity.setText(new StringBuilder("Humidity: " + weatherForecastResult.getList().get(position).getMain().getHumidity()).append("%"));
-        myViewHolder.forecastPressure.setText(new StringBuilder("Pressure: " + weatherForecastResult.getList().get(position).getMain().getPressure()).append(" hPa"));
-        myViewHolder.forecastWind.setText("Wind: " + weatherForecastResult.getList().get(position).getWind().getSpeed() + " m/s, " +
-                AppHelp.convertDegreeToCardinalDirection(weatherForecastResult.getList().get(position).getWind().getDeg()));
-//        myViewHolder.forecastDay.setText(weatherForecastResult.getList().get(0).getMain().getTempMax().intValue() + "/" +
-//                weatherForecastResult.getList().get(0).getMain().getTempMin().intValue());
+        myViewHolder.forecastTemp.setText(String.valueOf(temp));
+        myViewHolder.forecastHumidity.setText(weatherForecastResult.getList().get(position).getMain().getHumidity() + " %");
+        myViewHolder.forecastPressure.setText(weatherForecastResult.getList().get(position).getMain().getPressure() + " hPa");
+
+        myViewHolder.forecastWind.setText(weatherForecastResult.getList().get(position).getWind().getSpeed() + " m/s,");
+
+        int drawableId = AppHelp.convertDegreeToCardinalDirectionImg(weatherForecastResult.getList().get(position).getWind().getDeg());
+        myViewHolder.forecastWindDirection.setImageResource(drawableId);
+
+//        myViewHolder.forecastMinMaxTemp.setText(Math.round(weatherForecastResult.getList().get(position).getMain().getTempMin()) + "/" +
+//                Math.round(weatherForecastResult.getList().get(position).getMain().getTempMax()));
 
         myViewHolder.container.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_transition_from_left));
+
+
     }
 
     @Override
@@ -136,6 +141,8 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
 
         @BindView(R.id.day_icon)
         ImageView forecastIcon;
+        @BindView(R.id.wind_direction_iv)
+        ImageView forecastWindDirection;
         @BindView(R.id.days_txt)
         TextView forecastDay;
         @BindView(R.id.temperature_day_txt)

@@ -61,7 +61,7 @@
                         android:layout_marginEnd="24dp"
                         android:gravity="center"
                         android:textSize="78sp"
-                        android:textColor="@color/textColorPrimary"
+                        android:textColor="@color/colorPrimaryDark"
                         app:layout_constraintEnd_toEndOf="@id/scrolling_date_txt"
                         app:layout_constraintStart_toStartOf="@+id/scrolling_date_txt"
                         app:layout_constraintTop_toBottomOf="@+id/scrolling_date_txt" />
@@ -71,6 +71,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="24sp"
+                        android:textColor="@color/colorPrimaryDark"
                         app:layout_constraintStart_toEndOf="@+id/scrolling_temp_txt"
                         app:layout_constraintTop_toTopOf="@+id/scrolling_temp_txt" />
 
@@ -144,7 +145,6 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/textColorPrimary"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.423"
                         app:layout_constraintStart_toStartOf="@+id/guideline"
                         app:layout_constraintTop_toTopOf="@+id/scrolling_pressure_txt" />
 

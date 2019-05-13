@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/container"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="8dp"
-    android:layout_marginTop="8dp"
     android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
     android:layout_marginEnd="16dp"
-    android:layout_marginBottom="8dp">
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -20,8 +19,8 @@
 
         <ImageView
             android:id="@+id/day_icon"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_snow"
@@ -30,64 +29,120 @@
             app:layout_constraintStart_toEndOf="@+id/forecast_pressure_item_txt"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/temperature_day_txt"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="8dp"
-            android:textColor="@color/colorPrimary"
-            android:textSize="30sp"
-            android:textStyle="bold"
+            android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/days_txt"
-            tools:text="22 C" />
+            app:layout_constraintEnd_toEndOf="@+id/days_txt"
+            app:layout_constraintStart_toStartOf="@+id/days_txt"
+            app:layout_constraintTop_toBottomOf="@+id/days_txt">
+
+            <TextView
+                android:id="@+id/temperature_day_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="38sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="22" />
+
+            <TextView
+                android:id="@+id/celsius_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="°C"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/temperature_day_txt"
+                app:layout_constraintTop_toTopOf="@+id/temperature_day_txt" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <TextView
             android:id="@+id/days_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:textColor="@color/colorPrimary"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Thu 17:00"/>
+            tools:text="Thu 17:00" />
 
         <TextView
             android:id="@+id/forecast_humidity_item_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:textColor="@color/colorPrimary"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Humidity: "/>
+            app:layout_constraintBottom_toBottomOf="@+id/humidity_item_iv"
+            app:layout_constraintStart_toEndOf="@+id/humidity_item_iv"
+            app:layout_constraintTop_toTopOf="@+id/humidity_item_iv" />
 
         <TextView
             android:id="@+id/forecast_pressure_item_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
             android:textColor="@color/colorPrimary"
-            app:layout_constraintBottom_toTopOf="@+id/forecast_wind_item_txt"
-            app:layout_constraintStart_toStartOf="@+id/forecast_humidity_item_txt"
-            app:layout_constraintTop_toBottomOf="@+id/forecast_humidity_item_txt"
-            tools:text="Pressure: 1029.23 hpa" />
+            app:layout_constraintBottom_toBottomOf="@+id/pressure_item_iv"
+            app:layout_constraintStart_toEndOf="@+id/pressure_item_iv"
+            app:layout_constraintTop_toTopOf="@+id/pressure_item_iv" />
 
         <TextView
             android:id="@+id/forecast_wind_item_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
             android:textColor="@color/colorPrimary"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/wind_item_iv"
             app:layout_constraintStart_toStartOf="@+id/forecast_pressure_item_txt"
-            tools:text="Wind: " />
+            app:layout_constraintTop_toTopOf="@+id/wind_item_iv" />
+
+        <ImageView
+            android:id="@+id/humidity_item_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/humidity" />
+
+        <ImageView
+            android:id="@+id/pressure_item_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:layout_constraintBottom_toTopOf="@+id/wind_item_iv"
+            app:layout_constraintStart_toStartOf="@+id/humidity_item_iv"
+            app:layout_constraintTop_toBottomOf="@+id/humidity_item_iv"
+            app:srcCompat="@drawable/barometer" />
+
+        <ImageView
+            android:id="@+id/wind_item_iv"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/pressure_item_iv"
+            app:layout_constraintStart_toStartOf="@+id/pressure_item_iv"
+            app:srcCompat="@drawable/wind" />
+
+        <ImageView
+            android:id="@+id/wind_direction_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:layout_constraintBottom_toBottomOf="@+id/forecast_wind_item_txt"
+            app:layout_constraintStart_toEndOf="@+id/forecast_wind_item_txt"
+            app:layout_constraintTop_toTopOf="@+id/forecast_wind_item_txt"
+            app:srcCompat="@drawable/ic_circle" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
