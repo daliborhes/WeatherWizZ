@@ -1,7 +1,6 @@
 package com.daliborhes.weatherwizz.Adapter;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,13 +25,12 @@ import butterknife.ButterKnife;
  * Created by Dalibor J. Stanković on 23.04.2019.
  */
 
-public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForecastAdapter.MyViewHolder> {
+public class Weather5DayAdapter extends RecyclerView.Adapter<Weather5DayAdapter.MyViewHolder> {
 
     private Context mContext;
     private WeatherForecastResult weatherForecastResult;
-    private String serverIcon;
 
-    public RecyclerForecastAdapter(Context mContext, WeatherForecastResult weatherForecastResult) {
+    public Weather5DayAdapter(Context mContext, WeatherForecastResult weatherForecastResult) {
         this.mContext = mContext;
         this.weatherForecastResult = weatherForecastResult;
     }
@@ -48,7 +46,39 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int position) {
 
-        serverIcon = weatherForecastResult.getList().get(position).getWeather().get(0).getIcon();
+        // Replace icons
+        replaceIcons(myViewHolder, position);
+
+        // Load information
+        displayForecastInfo(myViewHolder, position);
+    }
+
+    private void displayForecastInfo(MyViewHolder myViewHolder, int position) {
+        myViewHolder.forecastDay.setText(Common.convertUnixToDay(weatherForecastResult.getList().get(position).getDt()));
+        int temp = (int) Math.round(weatherForecastResult.getList().get(position).getMain().getTemp());
+        myViewHolder.forecastTemp.setText(String.valueOf(temp));
+        myViewHolder.forecastHumidity.setText(weatherForecastResult.getList().get(position).getMain().getHumidity() + " %");
+        myViewHolder.forecastPressure.setText(weatherForecastResult.getList().get(position).getMain().getPressure() + " hPa");
+
+        myViewHolder.forecastWind.setText(weatherForecastResult.getList().get(position).getWind().getSpeed() + " m/s,");
+
+        int drawableId = AppHelp.convertDegreeToCardinalDirectionImg(weatherForecastResult.getList().get(position).getWind().getDeg());
+        myViewHolder.forecastWindDirection.setImageResource(drawableId);
+
+//        myViewHolder.forecastMinMaxTemp.setText(Math.round(weatherForecastResult.getList().get(position).getMain().getTempMin()) + "/" +
+//                Math.round(weatherForecastResult.getList().get(position).getMain().getTempMax()));
+
+        if ((position % 2) == 0) {
+            myViewHolder.container.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_transition_from_left));
+        } else {
+            myViewHolder.container.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_transition_from_right));
+        }
+
+    }
+
+    private void replaceIcons(MyViewHolder myViewHolder, int position) {
+
+        String serverIcon = weatherForecastResult.getList().get(position).getWeather().get(0).getIcon();
 
         switch (serverIcon) {
             case "01d":
@@ -111,25 +141,6 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
                         ".png").into(myViewHolder.forecastIcon);
                 break;
         }
-
-
-        myViewHolder.forecastDay.setText(Common.convertUnixToDay(weatherForecastResult.getList().get(position).getDt()));
-        int temp = (int) Math.round(weatherForecastResult.getList().get(position).getMain().getTemp());
-        myViewHolder.forecastTemp.setText(String.valueOf(temp));
-        myViewHolder.forecastHumidity.setText(weatherForecastResult.getList().get(position).getMain().getHumidity() + " %");
-        myViewHolder.forecastPressure.setText(weatherForecastResult.getList().get(position).getMain().getPressure() + " hPa");
-
-        myViewHolder.forecastWind.setText(weatherForecastResult.getList().get(position).getWind().getSpeed() + " m/s,");
-
-        int drawableId = AppHelp.convertDegreeToCardinalDirectionImg(weatherForecastResult.getList().get(position).getWind().getDeg());
-        myViewHolder.forecastWindDirection.setImageResource(drawableId);
-
-//        myViewHolder.forecastMinMaxTemp.setText(Math.round(weatherForecastResult.getList().get(position).getMain().getTempMin()) + "/" +
-//                Math.round(weatherForecastResult.getList().get(position).getMain().getTempMax()));
-
-        myViewHolder.container.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_transition_from_left));
-
-
     }
 
     @Override
@@ -156,7 +167,7 @@ public class RecyclerForecastAdapter extends RecyclerView.Adapter<RecyclerForeca
         @BindView(R.id.container)
         CardView container;
 
-        public MyViewHolder(@NonNull View itemView) {
+        MyViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
 

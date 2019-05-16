@@ -1,24 +1,27 @@
 package com.daliborhes.weatherwizz.Fragments;
 
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.daliborhes.weatherwizz.Adapter.RecyclerForecastAdapter;
+import com.daliborhes.weatherwizz.Adapter.Weather5DayAdapter;
 import com.daliborhes.weatherwizz.Common.Common;
 import com.daliborhes.weatherwizz.Common.Retrofit.IOpenWeatherMap;
 import com.daliborhes.weatherwizz.Common.Retrofit.RetrofitClient;
 import com.daliborhes.weatherwizz.Model.forecast5DayWeather.WeatherForecastResult;
 import com.daliborhes.weatherwizz.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -29,11 +32,14 @@ import retrofit2.Retrofit;
  */
 public class Weather5DayFragment extends Fragment {
 
-    private static Weather5DayFragment instance;
+    @BindView(R.id.forecast_recyclerview)
+    RecyclerView forecastRecyclerView;
 
+    private static Weather5DayFragment instance;
     private CompositeDisposable compositeDisposable;
     private IOpenWeatherMap mService;
-    private RecyclerView forecastRecyclerView;
+
+    private Unbinder unbinder;
 
     public static Weather5DayFragment getInstance() {
         if (instance == null) {
@@ -55,17 +61,11 @@ public class Weather5DayFragment extends Fragment {
         // Inflate the layout for this fragment
         View itemView = inflater.inflate(R.layout.fragment_weather_5_day, container, false);
 
-        forecastRecyclerView = itemView.findViewById(R.id.forecast_recyclerview);
+        unbinder = ButterKnife.bind(this, itemView);
 
         getForecastInfo();
 
         return itemView;
-    }
-
-    @Override
-    public void onStop() {
-        compositeDisposable.clear();
-        super.onStop();
     }
 
     private void getForecastInfo() {
@@ -77,15 +77,31 @@ public class Weather5DayFragment extends Fragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::displayForecast5Day,
-                        throwable -> Log.d("5DayForecast", "Error: " + throwable.getMessage())));
+                        throwable -> {
+                            Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_LONG).show();
+                            Log.d("CityFragment", "" + throwable.getMessage());
+                        })
+        );
     }
 
     private void displayForecast5Day(WeatherForecastResult weatherForecastResult) {
 
         forecastRecyclerView.setHasFixedSize(true);
         forecastRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        RecyclerForecastAdapter adapter = new RecyclerForecastAdapter(getContext(), weatherForecastResult);
+        Weather5DayAdapter adapter = new Weather5DayAdapter(getContext(), weatherForecastResult);
         forecastRecyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onStop() {
+        compositeDisposable.clear();
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
 }

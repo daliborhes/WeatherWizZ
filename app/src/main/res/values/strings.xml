@@ -13,5 +13,6 @@
     <string name="hour_unit">h</string>
     <string name="pressure_unit">hpa</string>
     <string name="percent">%</string>
+    <string name="enter_city_name_hint">Enter city...</string>
 
 </resources>

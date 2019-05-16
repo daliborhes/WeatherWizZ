@@ -2,7 +2,6 @@ package com.daliborhes.weatherwizz.Common;
 
 import android.location.Location;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

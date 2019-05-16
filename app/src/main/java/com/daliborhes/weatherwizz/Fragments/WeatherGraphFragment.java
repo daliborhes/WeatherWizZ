@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import com.daliborhes.weatherwizz.Common.Common;
 import com.daliborhes.weatherwizz.Common.Retrofit.IOpenWeatherMap;
 import com.daliborhes.weatherwizz.Common.Retrofit.RetrofitClient;
+import com.daliborhes.weatherwizz.Model.forecast5DayWeather.WeatherForecastResult;
 import com.daliborhes.weatherwizz.R;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -26,10 +27,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.Utils;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -98,39 +96,40 @@ public class WeatherGraphFragment extends Fragment {
                 "metric")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(weatherResult -> {
-
-                    // Load information
-                    for (int i = 0; i < weatherResult.getList().size(); i++) {
-                        double temp = weatherResult.getList().get(i).getMain().getTemp();
-                        float tempFloat = (float) temp;
-                        int hour = weatherResult.getList().get(i).getDt();
-                        double windSpeed = weatherResult.getList().get(i).getWind().getSpeed();
-                        float windSpeedFloat = (float) windSpeed;
-                        double pressure = weatherResult.getList().get(i).getMain().getPressure();
-                        float pressureFloat = (float) pressure;
-                        Log.d("JSON temp", "getWeatherInfo: " + temp + " " + i + " " + hour + " " + windSpeedFloat);
-
-                        lineValuesTemp.add(new Entry(hour, tempFloat));
-                        lineValuesWind.add(new Entry(hour, windSpeedFloat));
-                        lineValuesPressure.add(new Entry(hour, pressureFloat));
-
-                    }
-
-                    // Hourly temperature line chart
-                    displayLineTemperatureChart();
-
-                    // Hourly wind speed chart
-                    displayLineWindChart();
-
-                    // Hourly temperature bar chart
-                    displayLinePressureChart();
-
-                }, throwable -> {
-                    Toast.makeText(getActivity(), "" + throwable.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.d("GraphFragment", "" + throwable.getMessage());
-                })
+                .subscribe(weatherResult -> displayGraphInfo(weatherResult)
+                        , throwable -> {
+                            Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_LONG).show();
+                            Log.d("GraphFragment", "" + throwable.getMessage());
+                        })
         );
+    }
+
+    private void displayGraphInfo(WeatherForecastResult weatherResult) {
+        // Load information
+        for (int i = 0; i < weatherResult.getList().size(); i++) {
+            double temp = weatherResult.getList().get(i).getMain().getTemp();
+            float tempFloat = (float) temp;
+            int hour = weatherResult.getList().get(i).getDt();
+            double windSpeed = weatherResult.getList().get(i).getWind().getSpeed();
+            float windSpeedFloat = (float) windSpeed;
+            double pressure = weatherResult.getList().get(i).getMain().getPressure();
+            float pressureFloat = (float) pressure;
+            Log.d("JSON temp", "getWeatherInfo: " + temp + " " + i + " " + hour + " " + windSpeedFloat);
+
+            lineValuesTemp.add(new Entry(hour, tempFloat));
+            lineValuesWind.add(new Entry(hour, windSpeedFloat));
+            lineValuesPressure.add(new Entry(hour, pressureFloat));
+
+        }
+
+        // Hourly temperature line chart
+        displayLineTemperatureChart();
+
+        // Hourly wind speed line chart
+        displayLineWindChart();
+
+        // Hourly pressure line chart
+        displayLinePressureChart();
     }
 
     private void displayLineTemperatureChart() {
@@ -141,8 +140,7 @@ public class WeatherGraphFragment extends Fragment {
             // fill drawable only supported on api level 18 and above
             Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.fade_red);
             setTemp.setFillDrawable(drawable);
-        }
-        else {
+        } else {
             setTemp.setFillColor(Color.BLACK);
         }
         setTemp.setCircleColor(R.color.colorPrimaryDark);
@@ -154,8 +152,7 @@ public class WeatherGraphFragment extends Fragment {
         lineChartTemp.getXAxis().setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                SimpleDateFormat sdf = new SimpleDateFormat("EEE HH:mm", Locale.ENGLISH);
-                return sdf.format(new Date((long) (value * 1000)));
+                return Common.convertUnixToDay((int) value);
             }
         });
         lineChartTemp.setDragEnabled(false);
@@ -179,8 +176,7 @@ public class WeatherGraphFragment extends Fragment {
             // fill drawable only supported on api level 18 and above
             Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.fade_blue);
             setWind.setFillDrawable(drawable);
-        }
-        else {
+        } else {
             setWind.setFillColor(Color.BLACK);
         }
         setWind.setValueTextSize(12);
@@ -191,8 +187,7 @@ public class WeatherGraphFragment extends Fragment {
         lineChartWind.getXAxis().setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                SimpleDateFormat sdf = new SimpleDateFormat("EEE HH:mm");
-                return sdf.format(new Date((long) (value * 1000)));
+                return Common.convertUnixToDay((int) value);
             }
         });
         lineChartWind.getLegend().setEnabled(false);
@@ -214,8 +209,7 @@ public class WeatherGraphFragment extends Fragment {
             // fill drawable only supported on api level 18 and above
             Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.fade_green);
             setPressure.setFillDrawable(drawable);
-        }
-        else {
+        } else {
             setPressure.setFillColor(Color.BLACK);
         }
         setPressure.setCircleColor(R.color.colorPrimaryDark);
@@ -227,8 +221,7 @@ public class WeatherGraphFragment extends Fragment {
         lineChartPressure.getXAxis().setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                SimpleDateFormat sdf = new SimpleDateFormat("EEE HH:mm", Locale.ENGLISH);
-                return sdf.format(new Date((long) (value * 1000)));
+                return Common.convertUnixToDay((int) value);
             }
         });
         lineChartPressure.setDragEnabled(false);
