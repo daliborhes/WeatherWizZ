@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.daliborhes.weatherwizz.Common.Common;
 import com.daliborhes.weatherwizz.Model.forecast5DayWeather.WeatherForecastResult;
 import com.daliborhes.weatherwizz.R;
-import com.daliborhes.weatherwizz.application.AppHelp;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
@@ -62,7 +61,7 @@ public class Weather5DayAdapter extends RecyclerView.Adapter<Weather5DayAdapter.
 
         myViewHolder.forecastWind.setText(weatherForecastResult.getList().get(position).getWind().getSpeed() + " m/s,");
 
-        int drawableId = AppHelp.convertDegreeToCardinalDirectionImg(weatherForecastResult.getList().get(position).getWind().getDeg());
+        int drawableId = Common.convertDegreeToCardinalDirectionImg(weatherForecastResult.getList().get(position).getWind().getDeg());
         myViewHolder.forecastWindDirection.setImageResource(drawableId);
 
 //        myViewHolder.forecastMinMaxTemp.setText(Math.round(weatherForecastResult.getList().get(position).getMain().getTempMin()) + "/" +

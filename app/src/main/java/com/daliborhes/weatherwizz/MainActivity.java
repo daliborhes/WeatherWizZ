@@ -26,7 +26,6 @@ import com.daliborhes.weatherwizz.Fragments.Weather5DayFragment;
 import com.daliborhes.weatherwizz.Fragments.WeatherByCityNameFragment;
 import com.daliborhes.weatherwizz.Fragments.WeatherGraphFragment;
 import com.daliborhes.weatherwizz.Model.currentWeather.WeatherResult;
-import com.daliborhes.weatherwizz.application.AppHelp;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -230,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
         scrollingHumidityTxt.setText(getString(R.string.humidity) + " " + weatherResult.getMain().getHumidity() + getString(R.string.percent));
         scrollingHumidityTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_left));
         scrollingWindTxt.setText(getString(R.string.wind) + " " + weatherResult.getWind().getSpeed() + " " + getString(R.string.wind_speed_unit)
-                + ", " + AppHelp.convertDegreeToCardinalDirection(weatherResult.getWind().getDeg()));
+                + ", " + Common.convertDegreeToCardinalDirection(weatherResult.getWind().getDeg()));
         scrollingWindTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_left));
         scrollingSunriseTxt.setText(getString(R.string.sunrise) + " " + Common.convertUnixToHour(weatherResult.getSys().getSunrise()) + getString(R.string.hour_unit));
         scrollingSunriseTxt.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_transition_from_right));
