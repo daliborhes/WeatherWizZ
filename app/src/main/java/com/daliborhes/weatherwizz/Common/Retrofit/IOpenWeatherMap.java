@@ -30,4 +30,9 @@ public interface IOpenWeatherMap {
                                                               @Query("appid") String appId,
                                                               @Query("units") String unit);
 
+    @GET("forecast")
+    Observable<WeatherForecastResult> get5DayForecastByCityName(@Query("q") String cityName,
+                                                   @Query("appid") String appId,
+                                                   @Query("units") String unit);
+
 }

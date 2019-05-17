@@ -58,9 +58,7 @@ public class Weather5DayAdapter extends RecyclerView.Adapter<Weather5DayAdapter.
         myViewHolder.forecastTemp.setText(String.valueOf(temp));
         myViewHolder.forecastHumidity.setText(weatherForecastResult.getList().get(position).getMain().getHumidity() + " %");
         myViewHolder.forecastPressure.setText(weatherForecastResult.getList().get(position).getMain().getPressure() + " hPa");
-
         myViewHolder.forecastWind.setText(weatherForecastResult.getList().get(position).getWind().getSpeed() + " m/s,");
-
         int drawableId = Common.convertDegreeToCardinalDirectionImg(weatherForecastResult.getList().get(position).getWind().getDeg());
         myViewHolder.forecastWindDirection.setImageResource(drawableId);
 

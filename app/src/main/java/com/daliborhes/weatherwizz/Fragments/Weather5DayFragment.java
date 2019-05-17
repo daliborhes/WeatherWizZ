@@ -90,6 +90,7 @@ public class Weather5DayFragment extends Fragment {
         forecastRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         Weather5DayAdapter adapter = new Weather5DayAdapter(getContext(), weatherForecastResult);
         forecastRecyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     @Override

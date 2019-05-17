@@ -253,58 +253,58 @@ public class MainActivity extends AppCompatActivity {
 
         switch (serverIcon) {
             case "01d":
-                scrollingImageView.setImageResource(R.drawable.day_sunny);
+                scrollingImageView.setImageResource(R.drawable.day_sunny_white);
                 break;
             case "02d":
-                scrollingImageView.setImageResource(R.drawable.day_cloudy);
+                scrollingImageView.setImageResource(R.drawable.day_cloudy_white);
                 break;
             case "03d":
-                scrollingImageView.setImageResource(R.drawable.day_cloud);
+                scrollingImageView.setImageResource(R.drawable.day_cloud_white);
                 break;
             case "04d":
-                scrollingImageView.setImageResource(R.drawable.cloudy);
+                scrollingImageView.setImageResource(R.drawable.cloudy_white);
                 break;
             case "09d":
-                scrollingImageView.setImageResource(R.drawable.showers);
+                scrollingImageView.setImageResource(R.drawable.showers_white);
                 break;
             case "10d":
-                scrollingImageView.setImageResource(R.drawable.day_rain);
+                scrollingImageView.setImageResource(R.drawable.day_rain_white);
                 break;
             case "11d":
-                scrollingImageView.setImageResource(R.drawable.thunderstorm);
+                scrollingImageView.setImageResource(R.drawable.thunderstorm_white);
                 break;
             case "13d":
-                scrollingImageView.setImageResource(R.drawable.day_snow);
+                scrollingImageView.setImageResource(R.drawable.day_snow_white);
                 break;
             case "50d":
-                scrollingImageView.setImageResource(R.drawable.day_fog);
+                scrollingImageView.setImageResource(R.drawable.day_fog_white);
                 break;
             case "01n":
-                scrollingImageView.setImageResource(R.drawable.night_clear);
+                scrollingImageView.setImageResource(R.drawable.night_clear_white);
                 break;
             case "02n":
-                scrollingImageView.setImageResource(R.drawable.night_cloudy);
+                scrollingImageView.setImageResource(R.drawable.night_cloudy_white);
                 break;
             case "03n":
-                scrollingImageView.setImageResource(R.drawable.day_cloud);
+                scrollingImageView.setImageResource(R.drawable.day_cloud_white);
                 break;
             case "04n":
-                scrollingImageView.setImageResource(R.drawable.cloudy);
+                scrollingImageView.setImageResource(R.drawable.cloudy_white);
                 break;
             case "09n":
-                scrollingImageView.setImageResource(R.drawable.showers);
+                scrollingImageView.setImageResource(R.drawable.showers_white);
                 break;
             case "10n":
-                scrollingImageView.setImageResource(R.drawable.night_rain);
+                scrollingImageView.setImageResource(R.drawable.night_rain_white);
                 break;
             case "11n":
-                scrollingImageView.setImageResource(R.drawable.thunderstorm);
+                scrollingImageView.setImageResource(R.drawable.thunderstorm_white);
                 break;
             case "13n":
-                scrollingImageView.setImageResource(R.drawable.night_snow);
+                scrollingImageView.setImageResource(R.drawable.night_snow_white);
                 break;
             case "50n":
-                scrollingImageView.setImageResource(R.drawable.night_fog);
+                scrollingImageView.setImageResource(R.drawable.night_fog_white);
                 break;
             default:
                 Picasso.get().load("https://openweathermap.org/img/w/" + serverIcon + ".png")
